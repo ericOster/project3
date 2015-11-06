@@ -1,0 +1,177 @@
+package project3;
+
+import java.io.InvalidClassException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util. GregorianCalendar;
+import java.util.Scanner;
+
+public abstract class Account implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private int number;
+	private String owner;
+	private GregorianCalendar dateOpened;
+	private double balance;
+
+	/*****************************************************************
+	 * Constructor for account
+	 * @param number int, account number
+	 * @param owner String, owner of account
+	 * @param balance double, balance of account
+	 * @param dateOpened GregorianCalendar, date account opened
+	 *****************************************************************/
+	public Account(int number, String owner, double balance,
+			GregorianCalendar dateOpened) {
+		this.number = number;
+		this.owner = owner;
+		this.balance = balance;
+		this.dateOpened = dateOpened;
+	}
+	
+	/*****************************************************************
+	 * Returns the serialVersionUID of account
+	 * @return 1L ; serialVersionUID of account
+	 *****************************************************************/
+	public long getSerialVersionUID() {
+		return 1L;
+	}
+	
+	/*****************************************************************
+	 * Accesses for account number
+	 * @return number int, Account number
+	 *****************************************************************/
+	public int getNumber() {
+		return number;
+	}
+
+	/*****************************************************************
+	 * Sets the new account number
+	 * @param number int, number to set account number to
+	 *****************************************************************/
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	/*****************************************************************
+	 * Returns the account owner
+	 * @return owner ; the owner of the account
+	 *****************************************************************/
+	public String getOwner() {
+		return owner;
+	}
+
+	/*****************************************************************
+	 * Renames the owner of account
+	 * @param owner String, new owner name
+	 *****************************************************************/
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	/*****************************************************************
+	 * Returns the date the account was opened
+	 * @return dateOpened ; the date the account was opened
+	 *****************************************************************/
+	public GregorianCalendar getDateOpened() {
+		return dateOpened;
+	}
+	
+	/*****************************************************************
+	 * Gets the year the account was created
+	 * @return the year the account was opened
+	 *****************************************************************/
+	public int getYear() {
+		return dateOpened.get(Calendar.YEAR);
+	}
+	
+	/*****************************************************************
+	 * Gets the month the account was created
+	 * @return the month the account was opened
+	 *****************************************************************/
+	public int getMonth() {
+		return dateOpened.get(Calendar.MONTH);
+	}
+	
+	/*****************************************************************
+	 * Gets the day the account was created
+	 * @return the day the account was opened
+	 *****************************************************************/
+	public int getDay() {
+		return dateOpened.get(Calendar.DAY_OF_WEEK);
+	}
+
+	/*****************************************************************
+	 * Sets the date opened to a new date
+	 * @param dateOpened GregorianCalendar, new date
+	 *****************************************************************/
+	public void setDateOpened(GregorianCalendar dateOpened) {
+		this.dateOpened = dateOpened;
+	}
+
+	/*****************************************************************
+	 * Returns the balance of the account
+	 * @return balance ; the balance of the account
+	 *****************************************************************/
+	public double getBalance() {
+		return balance;
+	}
+
+	/*****************************************************************
+	 * Sets the balance of an account to a new value
+	 * @param balance double, the new balance of the account
+	 *****************************************************************/
+	public void setBalance(double balance) {
+		this.balance = balance;
+	}
+	
+	/*****************************************************************
+	 * Save instance fields to a text PrintWriter
+	 * one instance per line.
+	 * @param out PrintWriter to save text to
+	 *****************************************************************/
+	public void saveText(PrintWriter out) {
+		// Save account type
+		out.print(getNumber() + " ");
+		out.print(getYear() + " " + getMonth() + " " + getDay()+ " ");
+		out.print(getBalance() + " ");
+		out.println(getOwner()); // last field on line is string 
+								 // with possible spaces
+	}	
+	
+	/*****************************************************************
+	 * Load field data
+	 * @param in scanner to load data from
+	 *****************************************************************/
+	public void loadText(Scanner in) throws InvalidClassException{
+		setNumber(in.nextInt());
+		setDateOpened(new GregorianCalendar(in.nextInt(), in.nextInt(),
+											in.nextInt() ));
+		setBalance(in.nextDouble());
+		setOwner(in.nextLine());
+	}
+	
+	/*****************************************************************
+	 * Converts account to string
+	 * @return number, owner, dateOpened, balance ; of the account
+	 *****************************************************************/
+	public String ToString() {
+		
+		return number + owner + dateOpened + balance;
+	}
+	
+	/*****************************************************************
+	 * Formats the date of the GregCalendar
+	 * @param calendar GregorianCalendar, given calendar
+	 * @return dateFormatted ; String of the formatted date
+	 *****************************************************************/
+	public static String formatDate(GregorianCalendar calendar){
+	    SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+	    sdf.setCalendar(calendar);
+	    String dateFormatted = sdf.format(calendar.getTime());
+	    return dateFormatted;  
+	}
+
+}
+
