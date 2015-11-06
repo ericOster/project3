@@ -1,0 +1,147 @@
+package project3;
+
+import java.io.InvalidClassException;
+import java.io.PrintWriter;
+import java.util.GregorianCalendar;
+import java.util.Scanner;
+
+public class CheckingAccount extends Account{
+	
+	/**  The unique serialVersionUID for checking account */
+	private static final long serialVersionUID = 3L;
+	
+	/** The monthly fee for a checking account */
+	private double monthlyFee;
+
+	/*****************************************************************
+	 * Constructor for checking account
+	 * @param number int, is the account number
+	 * @param owner String, is the owner of account
+	 * @param balance double, is current balance of account
+	 * @param dateOpened GregorianCalendar, is date account is opened
+	 * @param monthlyFee double, is monthly fee for account
+	 *****************************************************************/
+	public CheckingAccount(int number, String owner, double balance,
+			GregorianCalendar dateOpened, double monthlyFee) {
+		super(number, owner, balance, dateOpened);
+
+		this.monthlyFee = monthlyFee;
+
+	}
+
+	/*****************************************************************
+	 * Constructor for checking using a scanner.  Saving/loading
+	 * @param in Scanner, used in constructor for scanning
+	 *****************************************************************/
+	public CheckingAccount(Scanner in) throws InvalidClassException{
+		// Initialize instance with dummy values
+		this(0, "", 0, new GregorianCalendar(2000, 1, 1), 0);
+
+		// Load actual values from scanner
+		loadText(in);
+	}
+
+	/*****************************************************************
+	 * Returns the serialVersionUID of checkingAccount
+	 * @return 3L ; the unique number for checking account
+	 *****************************************************************/
+	public long getSerialVersionUID() {
+		return 3L;
+	}
+
+	/*****************************************************************
+	 * Returns the monthly fee of the checking account
+	 * @return monthlyFee, the fee in the checking account
+	 *****************************************************************/
+	public double getMonthlyFee() {
+		return monthlyFee;
+	}
+
+	/*****************************************************************
+	 * Saves account to text file
+	 * @param out PrintWriter, Target file for saving
+	 *****************************************************************/
+	public void saveText(PrintWriter out) {
+		// Save account type
+		out.print("checking ");
+
+		// Save fields for this account type
+		out.print(getMonthlyFee() + " ");
+
+		// Save fields for super class
+		super.saveText(out);
+	}
+
+	/*****************************************************************
+	 * Loads account from text file
+	 * @param in Scanner, Target file for loading
+	 *****************************************************************/
+	public void loadText(Scanner in) throws InvalidClassException{
+		// Check for correct class type
+		String intype = in.next();
+		if (!intype.equals("checking")) 
+			throw new InvalidClassException
+		("checking", "wrong type:" + intype);
+
+		// Load fields for this account type
+		setNumber(in.nextInt());
+		setOwner(in.nextLine());
+		setBalance(in.nextDouble());
+		setDateOpened(new GregorianCalendar(in.nextInt(),in.nextInt(),
+				in.nextInt()));
+		setMonthlyFee(in.nextDouble());
+
+		// Load fields for super class
+		super.loadText(in);
+	}	
+
+	/*****************************************************************
+	 * Sets the new monthly fee for checking account
+	 * @param monthlyFee double, number to set fee to
+	 *****************************************************************/
+	public void setMonthlyFee(double monthlyFee) {
+		this.monthlyFee = monthlyFee;
+	}
+	
+	/*****************************************************************
+	 * Converts the account to a string
+	 * @return accountNum, accountOwner, accountBal, accountDate,
+	 * monthlyFee
+	 *****************************************************************/
+	public String toString() {
+		//overridden
+		String accountNum = Integer.toString(this.getNumber());
+		String accountOwner = this.getOwner();
+		String accountBal = Double.toString(this.getBalance());
+		String accountDate = formatDate(this.getDateOpened());
+		String monthlyFee = Double.toString(this.monthlyFee);	
+
+		return "Number(Checkings):" + accountNum + " " + "Owner:" 
+		+ accountOwner +
+		" " + "Balance:" + accountBal + " " + "Date:" + accountDate +
+		" " + "MonthlyFee:" + monthlyFee;
+	}
+
+	/*****************************************************************
+	 * Checks if account are equal
+	 * @param o Object, Object passed to check if equal to "this"
+	 * @return true ; accounts are equal
+	 * @return false ; accounts are not equal
+	 *****************************************************************/
+	public boolean equals(Object o){
+		if (o instanceof CheckingAccount){
+			CheckingAccount e = ((CheckingAccount) o);
+			if (this.getBalance() == e.getBalance() &&
+					this.getDateOpened() == e.getDateOpened() &&
+					this.getMonthlyFee() == e.getMonthlyFee() &&
+					this.getNumber() == e.getNumber() &&
+					this.getOwner() == e.getOwner() &&
+					this.getSerialVersionUID() == 
+					e.getSerialVersionUID())
+				return true;
+			return false;
+		}
+		return false;
+	}
+
+}
