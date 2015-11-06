@@ -1,0 +1,173 @@
+package project3;
+
+import java.io.InvalidClassException;
+import java.io.PrintWriter;
+import java.util.GregorianCalendar;
+import java.util.Scanner;
+
+public class SavingsAccount extends Account{
+
+	/** The unique serialVersionUID for savingsaccount */
+	private static final long serialVersionUID = 2L;
+	
+	/** The min balance a savings account is allowed */
+	private double minBalance;
+	
+	/** The interest rate for a savings account */
+	private double interestRate;
+
+	/*****************************************************************
+	 * Constructor for savings account
+	 * @param number int, is the account number
+	 * @param owner String, is the owner of account
+	 * @param balance double, is current balance of account
+	 * @param dateOpened GregorianCalendar, is date account is opened
+	 * @param minBalance double, is the min balance allowed in account
+	 * @param interestRate double, is the intrest rate of account
+	 *****************************************************************/
+	public SavingsAccount(int number, String owner, double balance,
+			GregorianCalendar dateOpened, double minBalance, 
+			double interestRate) {
+		super(number, owner, balance, dateOpened);
+		this.minBalance = minBalance;
+		this.interestRate = interestRate;
+
+	}
+	
+	/*****************************************************************
+	 * Constructor for savings using a scanner.  Saving/loading
+	 * @param in Scanner, used in constructor for scanning
+	 *****************************************************************/
+	public SavingsAccount(Scanner in) {
+		// Initialize instance with dummy values
+				this(0, "", 0, new GregorianCalendar(2000, 1, 1), 1.1, 
+						1.1);
+				
+				// Load actual values from scanner
+				try {
+					loadText(in);
+				} catch (InvalidClassException e) {
+					e.printStackTrace();
+				}
+	}
+	
+	/*****************************************************************
+	 * Returns the serialVersionUID of SavingsAccount
+	 * @return 2L ; the unique number for savings account
+	 *****************************************************************/
+	public long getSerialVersionUID() {
+		return 2L;
+	}
+	
+	/*****************************************************************
+	 * Returns the min balance
+	 * @return minBalance ; the min balance of savings account
+	 *****************************************************************/
+	public double getMinBalance() {
+		return minBalance;
+	}
+
+	/*****************************************************************
+	 * Sets the new min balance of account
+	 * @param minBalance double, The new value that is min balance
+	 *****************************************************************/
+	public void setMinBalance(double minBalance) {
+		this.minBalance = minBalance;
+	}
+
+	/*****************************************************************
+	 * Returns the interest rate of savings account
+	 * @return intrestRate ; the interest rate value of account
+	 *****************************************************************/
+	public double getInterestRate() {
+		return interestRate;
+	}
+
+	/*****************************************************************
+	 * Sets the new interest rate of savings account
+	 * @param interestRate double, The new value that is interest rate
+	 *****************************************************************/
+	public void setInterestRate(double interestRate) {
+		this.interestRate = interestRate;
+	}
+	
+	/*****************************************************************
+	 * Saves account into a text file
+	 * @param out PrintWriter, the file you wish to target
+	 *****************************************************************/
+	public void saveText(PrintWriter out) {
+		// Save account type
+		out.print("savings ");
+		
+		// Save fields for this account type
+		out.print(getMinBalance() + " " + getInterestRate());
+		
+		// Save fields for super class
+		super.saveText(out);
+	}
+	
+	/*****************************************************************
+	 * Loads account from text file
+	 * @param in Scanner, the file you wish to target
+	 *****************************************************************/
+	public void loadText(Scanner in) throws InvalidClassException{
+		// Check for correct class type
+		String intype = in.next();
+		if (!intype.equals("savings")) throw new InvalidClassException(
+									"savings", "wrong type:" + intype);
+		
+		// Load fields for this account type
+		setMinBalance(in.nextDouble());
+		setInterestRate(in.nextDouble());
+		
+		// Load fields for super class
+		super.loadText(in);
+	}	
+	
+	/*****************************************************************
+	 * Converts the SavingsAccount to a string
+	 * @return accountNumber, accountOwner, accountBalance, 
+	 * dateOpened, minBalance, interestR 
+	 *****************************************************************/
+	public String toString() {
+		//overridden
+		String accountNumber = Integer.toString(this.getNumber());
+		String accountOwner = this.getOwner();
+		String accountBalance = Double.toString(this.getBalance());
+		String dateOpened = formatDate(this.getDateOpened());
+		String minBalance = Double.toString(this.getMinBalance());
+		String interestR = Double.toString(this.getInterestRate());
+
+		return "Number(Savings):" + accountNumber + " " + "Owner:" + 
+		accountOwner + " " + "Balance:" + accountBalance + " " + 
+		"Date:" + dateOpened + " " + "Min Balance:" + 
+		minBalance + " " + "Interest Rate:" + interestR;
+	}
+
+	/*****************************************************************
+	 * Checks if accounts are equals
+	 * @param o Object, Object passed to check if equal to "this"
+	 * @return true ; accounts are equal
+	 * @return false ; accounts are not equal
+	 *****************************************************************/
+	public boolean equals(Object o){
+		if (o instanceof SavingsAccount){
+			SavingsAccount given = (SavingsAccount) o;
+			if (this.getBalance() == given.getBalance() &&
+					this.getDateOpened() == given.getDateOpened() &&
+					this.getInterestRate() == 
+					given.getInterestRate() &&
+					this.getMinBalance() == given.getMinBalance() &&
+					this.getNumber() == given.getNumber() &&
+					this.getOwner() == given.getOwner() &&
+					this.getSerialVersionUID() == 
+					given.getSerialVersionUID())
+				return true;
+			return false;
+		}
+		return false;
+	}
+   
+
+
+}
