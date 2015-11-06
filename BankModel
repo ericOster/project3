@@ -1,0 +1,196 @@
+package project3;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Scanner;
+
+import javax.swing.AbstractListModel;
+
+public class BankModel extends AbstractListModel{
+
+	/** Array list of all accounts in the bank model */
+	private ArrayList<Account> accounts;
+
+	/*****************************************************************
+	 * Constructor that sets accounts to a new array list
+	 *****************************************************************/
+	public BankModel() {
+		accounts = new ArrayList<Account>();
+
+	}
+	
+	/*****************************************************************
+	 * Saves accounts to a text file
+	 * @throws FileNotFoundException ; If the file is not there
+	 *****************************************************************/
+	public void saveText() throws FileNotFoundException {
+		
+		String[] account = null;
+
+		PrintWriter pw = new PrintWriter(new FileOutputStream
+	("/Users/ericosterwisch/Documents/workspace/project3/accounts"));
+
+		//add each account in the list to the text file
+		for (Account acc : accounts)
+			//use toString method to move accounts to text file
+			pw.println(acc.toString());
+		pw.close();
+	}
+
+	/*****************************************************************
+	 * Loads accounts from a text file
+	 * @param fname String, target file to load from
+	 * @throws FileNotFoundException ; If a file is not there
+	 * @throws InvalidClassException ; If a class is wrong
+	 *****************************************************************/
+	public void loadText() throws FileNotFoundException,
+										InvalidClassException {
+		accounts.clear(); // clear out any previous accounts
+
+		// Create a scanner to read the file
+		Scanner in = new Scanner
+	("/Users/ericosterwisch/Documents/workspace/project3/accounts");
+
+		// Continue as long as there is more data
+		while (in.hasNext()) {
+			// Check what type of data is available
+			if (in.hasNext("checking")) {
+				accounts.add(new CheckingAccount(in));
+			} else {
+				accounts.add(new SavingsAccount(in));
+			}
+		}
+		in.close();
+	}
+
+	/*****************************************************************
+	 * Saves accounts from a binary file
+	 * @param fname String, target file to save to
+	 * @throws IOException ; For an exception
+	 *****************************************************************/
+	public void saveBinary(String fname) throws IOException {
+		ObjectOutputStream oos= new ObjectOutputStream(new 
+				FileOutputStream(fname));
+		for (Account acc : accounts) {
+			oos.writeObject(acc);
+			oos.close( );
+		}
+		oos.close();
+	}
+
+	/*****************************************************************
+	 * Loads accounts from a binary file
+	 * @param fname String, target file to load from
+	 * @throws IOException ; for an exception
+	 * @throws ClassNotFoundException ; if it can not be found
+	 *****************************************************************/
+	public void loadBinary(String fname) throws IOException, 
+	ClassNotFoundException {
+		accounts.clear();
+		ObjectInputStream ois = new ObjectInputStream(
+				new FileInputStream(fname));
+		accounts = (ArrayList<Account>) ois.readObject(); 
+		// read arraylist and all its objects
+		ois.close();
+	}
+
+	/*****************************************************************
+	 * Saves accounts to a XML file
+	 * @param fname String, target file to save to
+	 * @throws IOException ; for an exception
+	 *****************************************************************/
+	public void saveXML(String fname) throws IOException {
+		XMLEncoder e = new XMLEncoder(
+				new BufferedOutputStream(
+						new FileOutputStream("Test.xml")));
+		e.writeObject(accounts);
+		e.close();
+	}
+
+	/*****************************************************************
+	 * Loads accounts from a XML file
+	 * @param fname String, target file to load from
+	 * @throws IOException ; for an exception
+	 * @throws ClassNotFoundException ; if it can not be found
+	 *****************************************************************/
+	public void loadXML(String fname) throws IOException,
+	ClassNotFoundException {
+		XMLDecoder d = new XMLDecoder(
+				new BufferedInputStream(
+						new FileInputStream("Test.xml")));
+		accounts = (ArrayList<Account>) d.readObject();
+		d.close();
+	}
+
+	@Override
+	/*****************************************************************
+	 * Returns the element at i
+	 * @param i int, target account in list
+	 *****************************************************************/
+	public Object getElementAt(int i) {
+		// TODO Auto-generated method stub
+		return accounts.get(i);
+	}
+	
+
+	@Override
+	/*****************************************************************
+	 * Returns size of list
+	 * @return accounts.size()
+	 *****************************************************************/
+	public int getSize() {
+		// TODO Auto-generated method stub
+		return accounts.size();
+	}
+	
+	/*****************************************************************
+	 * Updates account in spot i
+	 * @param i int, target account in list
+	 * @param acc Account, updating account
+	 *****************************************************************/
+	public void updateAcc(int i, Account acc) {
+		accounts.set(i, acc);
+		fireContentsChanged(this, i, i);
+	}
+	
+	/*****************************************************************
+	 * deletes all accounts
+	 *****************************************************************/
+	public void deleteAll() {
+		accounts.clear();
+		fireIntervalRemoved(this, 0, 1);
+	}
+		
+	/*****************************************************************
+	 * Adds new account to list
+	 * @param a Account, account to add
+	 *****************************************************************/
+	public void addAcc(Account a) {
+		accounts.add(a);		
+		fireIntervalAdded(this, accounts.size() - 1, accounts.size());
+	}
+	
+	/*****************************************************************
+	 * Deletes account from list 
+	 * @param i 
+	 *****************************************************************/
+	public void deleteAcc(int i) {
+		//delete at index i
+		accounts.remove(i);
+		fireIntervalRemoved(this, i, i);
+	}
+
+
+}
