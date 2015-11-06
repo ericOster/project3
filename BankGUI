@@ -1,0 +1,536 @@
+package project3;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InvalidClassException;
+import java.util.GregorianCalendar;
+
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.*;
+//gitHub update
+//hitHub update2
+public class BankGUI extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
+	private JTextField textField_6;
+	private BankModel model;
+	private int index;
+	private JRadioButton rdbtnChecking;
+	private JRadioButton rdbtnSavings;
+	private JList<String> accountsList;
+//	private JTable accountsTable;
+
+	public static void main(String[] args) {
+
+		BankGUI frame = new BankGUI();
+		frame.setVisible(true);
+
+	}
+
+	public BankGUI() {
+
+		model = new BankModel();
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 750, 650);
+
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+
+		ActionListener menuListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Create a file chooser
+				final JFileChooser fc = new JFileChooser();
+				FileNameExtensionFilter binary = new 
+						FileNameExtensionFilter("Binary files", "ser");
+				FileNameExtensionFilter text = new 
+						FileNameExtensionFilter("Text files", "txt");
+				FileNameExtensionFilter xml = new 
+						FileNameExtensionFilter("xml files", "xml");
+				int returnVal;
+				switch (e.getActionCommand()) {
+				case "loadBinary":
+					fc.addChoosableFileFilter(binary);
+			        returnVal = fc.showOpenDialog(BankGUI.this);
+			        if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            File file = fc.getSelectedFile();
+			            try {
+							model.loadBinary(file.getPath());
+						} catch (ClassNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			        }
+			        break;
+			        
+				case "saveBinary":
+					fc.addChoosableFileFilter(binary);
+					returnVal = fc.showSaveDialog(BankGUI.this);
+			        if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            File file = fc.getSelectedFile();
+			            try {
+							model.saveBinary(file.getPath());
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			        }
+			        break;
+				
+				case "loadText":
+					fc.addChoosableFileFilter(text);
+			        returnVal = fc.showOpenDialog(BankGUI.this);
+			        if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            File file = fc.getSelectedFile();
+			            try {
+							model.loadText();
+						} catch (InvalidClassException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			        }
+			        break;
+			        
+				case "saveText":
+					fc.addChoosableFileFilter(text);
+					returnVal = fc.showSaveDialog(BankGUI.this);
+			        if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            File file = fc.getSelectedFile();
+			            try {
+							model.saveText();
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			        }
+			        break;
+				
+				case "quit":
+					System.exit(0);
+					break;
+				}
+			}
+		};
+		
+		JMenu menu = new JMenu("File");
+		menuBar.add(menu);
+
+		JMenuItem item;
+		item = new JMenuItem("Load From Binary");
+		item.setActionCommand("loadBinary");
+		item.addActionListener(menuListener);
+		menu.add(item);
+
+		item = new JMenuItem("Save As Binary");
+		item.setActionCommand("saveBinary");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		menu.add(new JSeparator());
+
+		item = new JMenuItem("Load From text");
+		item.setActionCommand("loadText");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		item = new JMenuItem("Save As Text");
+		item.setActionCommand("saveText");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		menu.add(new JSeparator());
+		
+		item = new JMenuItem("Load From XML");
+		item.setActionCommand("loadXML");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		item = new JMenuItem("Save As XML");
+		item.setActionCommand("saveXML");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		menu.add(new JSeparator());
+		
+		item = new JMenuItem("Quit");
+		item.setActionCommand("quit");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		menu = new JMenu("Sort");
+		menuBar.add(menu);
+
+		item = new JMenuItem("By Account Number");
+		item.setActionCommand("sortNumber");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		JMenuItem mntmNewMenuItem_8 = new JMenuItem
+				("By Account Owner");
+		item.setActionCommand("sortOwner");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		JMenuItem mntmNewMenuItem_9 = new JMenuItem("By Date Opened");
+		item.setActionCommand("sortDate");
+		item.addActionListener(menuListener);
+		menu.add(item);
+		
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+
+		JButton btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				model.addAcc(getEnteredAccount());
+			}
+		});
+		btnAdd.setBounds(606, 423, 89, 23);	
+		contentPane.add(btnAdd);
+
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				model.deleteAcc(getIndex());
+			}
+		});
+		btnDelete.setBounds(606, 457, 89, 23);
+		contentPane.add(btnDelete);	
+
+		JButton btnUpdate = new JButton("Update");
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				model.updateAcc(getIndex(), getEnteredAccount());
+			}
+		});
+		btnUpdate.setBounds(606, 491, 89, 23);
+		contentPane.add(btnUpdate);
+
+		JButton btnClear = new JButton("Clear");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				model.deleteAll();
+			}
+		});
+		btnClear.setBounds(606, 525, 89, 23);
+		contentPane.add(btnClear);
+
+		JLabel lblNewLabel = new JLabel("Date Opened");
+		lblNewLabel.setBounds(10, 450, 113, 14);
+		contentPane.add(lblNewLabel);
+
+		JLabel lblNewLabel_1 = new JLabel("Account Balance");
+		lblNewLabel_1.setBounds(10, 478, 113, 14);
+		contentPane.add(lblNewLabel_1);
+
+		JLabel lblNewLabel_2 = new JLabel("Monthly Fee");
+		lblNewLabel_2.setBounds(10, 506, 113, 14);
+		contentPane.add(lblNewLabel_2);
+
+		JLabel lblNewLabel_3 = new JLabel("Interest Rate");
+		lblNewLabel_3.setBounds(10, 534, 113, 14);
+		contentPane.add(lblNewLabel_3);
+
+		JLabel lblNewLabel_4 = new JLabel("Account Owner");
+		lblNewLabel_4.setBounds(10, 424, 113, 14);
+		contentPane.add(lblNewLabel_4);
+
+		JLabel lblNewLabel_5 = new JLabel("Account Number");
+		lblNewLabel_5.setBounds(10, 395, 113, 14);
+		contentPane.add(lblNewLabel_5);
+
+		JLabel lblNewLabel_6 = new JLabel("Minimum Balance");
+		lblNewLabel_6.setBounds(10, 562, 113, 14);
+		contentPane.add(lblNewLabel_6);
+
+		//Group the radio buttons.
+	    ButtonGroup group = new ButtonGroup();
+	    
+	    //React to the buttons
+	    ActionListener listener = new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (rdbtnChecking.isSelected()) {
+					textField_4.setEditable(true);
+					textField_5.setEditable(false);
+					textField_6.setEditable(false);
+				}
+				else {
+					textField_4.setEditable(false);
+					textField_5.setEditable(true);
+					textField_6.setEditable(true);
+				}
+			}
+		};
+	    
+		rdbtnChecking = new JRadioButton("Checking");
+		rdbtnChecking.addActionListener(listener);
+		rdbtnChecking.setBounds(243, 362, 89, 23);
+		contentPane.add(rdbtnChecking);
+		group.add(rdbtnChecking);
+
+		rdbtnSavings = new JRadioButton("Savings");
+		rdbtnSavings.addActionListener(listener);
+		rdbtnSavings.setBounds(403, 362, 89, 23);
+		group.add(rdbtnSavings);
+		contentPane.add(rdbtnSavings);
+
+		textField = new JTextField();
+		textField.setBounds(133, 392, 435, 20);
+		contentPane.add(textField);
+		textField.setColumns(10);
+
+		textField_1 = new JTextField();
+		textField_1.setBounds(133, 419, 435, 20);
+		contentPane.add(textField_1);
+		textField_1.setColumns(10);
+
+		textField_2 = new JTextField();
+		textField_2.setBounds(133, 447, 435, 20);
+		contentPane.add(textField_2);
+		textField_2.setColumns(10);
+
+		textField_3 = new JTextField();
+		textField_3.setBounds(133, 475, 435, 20);
+		contentPane.add(textField_3);
+		textField_3.setColumns(10);
+
+		textField_4 = new JTextField();
+		textField_4.setBounds(133, 503, 435, 20);
+		contentPane.add(textField_4);
+		textField_4.setColumns(10);
+
+		textField_5 = new JTextField();
+		textField_5.setBounds(133, 531, 435, 20);
+		contentPane.add(textField_5);
+		textField_5.setColumns(10);
+
+		textField_6 = new JTextField();
+		textField_6.setBounds(133, 559, 435, 20);
+		contentPane.add(textField_6);
+		textField_6.setColumns(10);
+
+		JLabel lblNewLabel_7 = new JLabel("#");
+		lblNewLabel_7.setBounds(43, 7, 50, 14);
+		contentPane.add(lblNewLabel_7);
+
+		JLabel lblDateOpened = new JLabel("Owner");
+		lblDateOpened.setBounds(90, 7, 76, 14);
+		contentPane.add(lblDateOpened);
+
+		JLabel lblAccountOwner = new JLabel("Current Balance");
+		lblAccountOwner.setBounds(175, 7, 100, 14);
+		contentPane.add(lblAccountOwner);
+
+		JLabel lblCurrentBalance = new JLabel("Date Opened");
+		lblCurrentBalance.setBounds(300, 7, 103, 14);
+		contentPane.add(lblCurrentBalance);
+
+		JLabel lblNewLabel_8 = new JLabel("Monthly Fee");
+		lblNewLabel_8.setBounds(405, 7, 89, 14);
+		contentPane.add(lblNewLabel_8);
+
+		JLabel lblNewLabel_9 = new JLabel("Min Balance");
+		lblNewLabel_9.setBounds(500, 7, 76, 14);
+		contentPane.add(lblNewLabel_9);
+
+		JLabel lblNewLabel_10 = new JLabel("Interest Rate");
+		lblNewLabel_10.setBounds(595, 7, 89, 14);
+		contentPane.add(lblNewLabel_10);
+
+		accountsList = new JList<String>(model);
+		accountsList.setBounds(30, 32, 665, 301);
+		contentPane.add(accountsList);
+
+		accountsList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 1) {
+					int row = accountsList.getSelectedIndex();
+					System.out.println(row);
+					setIndex(row);
+				}
+			}
+		});
+	}
+	
+	public void setIndex(int i) {
+		index = i;
+	}
+	
+	public int getIndex(){
+		return index;
+	}
+	
+	public Account getEnteredAccount() {
+		Account a = null;
+		
+		/*****************************************************
+		 * Account Type
+		 *****************************************************/
+		if (textField_4.isEditable() &&
+				textField_5.isEditable()) {
+			JOptionPane.showMessageDialog
+			(null, "Please select checkings or savings");
+		}
+		/*****************************************************
+		 * Account Number
+		 *****************************************************/
+		int accountNum = 0;
+		if (textField.getText().equals("")){
+			accountNum=0;
+		}
+		else
+			try{
+				accountNum = Integer.parseInt
+						(textField.getText());
+			}
+		catch(Exception excE){
+			JOptionPane.showMessageDialog
+			(null,"Account number must be a number");
+		}
+		/*****************************************************
+		 * Account Owner
+		 *****************************************************/
+		String accountOwner;
+		if (textField_1.getText().equals(""))
+			accountOwner = "None";
+		else
+			accountOwner = textField_1.getText();
+		/*****************************************************
+		 * Account Date
+		 *****************************************************/
+		int day = 0;
+		int month = 0;
+		int year = 0;
+		String date = textField_2.getText();
+		try {
+			String[] splitDate = date.split("/");
+			day = Integer.parseInt(splitDate[0]);
+			month = Integer.parseInt(splitDate[1]);
+			year = Integer.parseInt(splitDate[2]);
+			if 
+			(day<0 || day>31 || month<0 || month>12 || year<0){
+				JOptionPane.showMessageDialog
+				(null,"Invalid date input");
+			}
+		}
+		catch(Exception excE){
+			JOptionPane.showMessageDialog
+			(null,"Date format is dd/mm/yyyy");
+		}
+		GregorianCalendar calendarDate = new GregorianCalendar
+				(year, month, day);
+		String stringGregDate = Account.formatDate(calendarDate);
+		/*****************************************************
+		 * Account Balance
+		 *****************************************************/
+		double accountBalance = 0;
+		if (textField_3.getText().equals("")){
+			accountBalance = 0;
+		}
+		else{
+			try {
+				accountBalance = Double.parseDouble
+						(textField_3.getText().replace
+								(",",".") );
+				//modifies the other way people write
+				//decimals to "correct" way
+			}
+			catch(Exception excE){
+				JOptionPane.showMessageDialog
+				(null,"Invalid account balance");
+			}
+		}
+		/*****************************************************
+		 * Monthly Fee
+		 ****************************************************/
+		double accountMonthlyFee = 0;
+		if (textField_4.getText().equals("")){
+			accountMonthlyFee = 0;
+		}
+		else{
+			try{
+				accountMonthlyFee = Double.parseDouble
+						(textField_4.getText().replace
+								(",", "."));
+			}
+			catch(Exception excE){
+				JOptionPane.showMessageDialog
+				(null,"Invalid monthly fee");
+			}
+		}
+		/*****************************************************
+		 * Interest Rate
+		 *****************************************************/
+		double accountIntRate = 0;
+		if (textField_5.getText().equals("")){
+			accountIntRate = 0;
+		}
+		else{
+			try{
+				accountIntRate = Double.parseDouble
+						(textField_5.getText().replace
+								(",", "."));
+			}
+			catch(Exception excE){
+				JOptionPane.showMessageDialog
+				(null,"Invalid intrest rate");
+			}
+		}
+		/*****************************************************
+		 * Minimum Balance
+		 *****************************************************/
+		double accountMinBalance = 0;
+		if (textField_6.getText().equals("")){
+			accountMinBalance = 0;
+		}
+		else{
+			try{
+				accountMinBalance = Double.parseDouble
+						(textField_6.getText().replace
+								(",", "."));
+			}
+			catch(Exception excE){
+				JOptionPane.showMessageDialog
+				(null,"Invalid min balance");
+			}
+		}
+		
+		
+		if (rdbtnChecking.isSelected()) {
+			a = new CheckingAccount(accountNum, accountOwner, 
+					accountBalance,calendarDate, accountMonthlyFee);
+		} else {
+			a = new SavingsAccount(accountNum, accountOwner, 
+					accountBalance,calendarDate, accountMinBalance, 
+					accountIntRate);
+		}
+		
+		return a;
+	}
+}
